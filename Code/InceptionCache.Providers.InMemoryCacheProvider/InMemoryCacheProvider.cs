@@ -22,7 +22,7 @@ namespace InceptionCache.Providers.InMemoryCacheProvider
             _cache = cache;
             _loggingService = loggingService;
 
-            _loggingService.Info("Created In Memory Cache: {0}", cache.DefaultCacheCapabilities.ToString());
+            _loggingService.Info("Created In Memory Cache");
         }
 
         private void LogDebug<T>(string operation, string key)

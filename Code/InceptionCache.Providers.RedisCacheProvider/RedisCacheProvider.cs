@@ -174,7 +174,7 @@ namespace InceptionCache.Providers.RedisCacheProvider
         {
             get
             {
-                return "In-Memory Cache Provider";
+                return "Redis Cache Provider";
             }
         }
     }

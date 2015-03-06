@@ -11,6 +11,12 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "InceptionCache.Providers.Re
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "InceptionCache.Tests", "Code\InceptionCache.Tests\InceptionCache.Tests.csproj", "{85262915-F58B-452F-BDB6-C24B5630B45A}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Samples", "Samples", "{86F6059A-D0F8-4C7E-AF3D-D25D80EF54AC}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{0E857EA7-BDEE-45CD-A3C4-49F8A41E04EA}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "InceptionCache.Samples.Nancy", "Samples\Nancy\InceptionCache.Samples.Nancy\InceptionCache.Samples.Nancy.csproj", "{9EA673E1-134D-40AD-A843-5F86F499A11A}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -33,8 +39,16 @@ Global
 		{85262915-F58B-452F-BDB6-C24B5630B45A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{85262915-F58B-452F-BDB6-C24B5630B45A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{85262915-F58B-452F-BDB6-C24B5630B45A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9EA673E1-134D-40AD-A843-5F86F499A11A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9EA673E1-134D-40AD-A843-5F86F499A11A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9EA673E1-134D-40AD-A843-5F86F499A11A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9EA673E1-134D-40AD-A843-5F86F499A11A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{85262915-F58B-452F-BDB6-C24B5630B45A} = {0E857EA7-BDEE-45CD-A3C4-49F8A41E04EA}
+		{9EA673E1-134D-40AD-A843-5F86F499A11A} = {86F6059A-D0F8-4C7E-AF3D-D25D80EF54AC}
 	EndGlobalSection
 EndGlobal
