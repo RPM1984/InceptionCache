@@ -100,5 +100,13 @@ namespace InceptionCache.Providers.InMemoryCacheProvider
 
             _cache.Remove(key);
         }
+
+        public string Name
+        {
+            get
+            {
+                return "In-Memory Cache Provider";
+            }
+        }
     }
 }

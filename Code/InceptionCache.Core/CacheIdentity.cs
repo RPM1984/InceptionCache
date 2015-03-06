@@ -11,20 +11,17 @@ namespace InceptionCache.Core
             expiry.ShouldBeGreaterThan(TimeSpan.Zero);
 
             CacheKey = cacheKey;
-            L1CacheExpiry = new TimeSpan(expiry.Ticks / 2);
-            L2CacheExpiry = expiry;
+            Expiry = expiry;
         }
 
         public string CacheKey { get; private set; }
-        public TimeSpan L1CacheExpiry { get; private set; }
-        public TimeSpan L2CacheExpiry { get; private set; }
+        public TimeSpan Expiry { get; private set; }
 
         public override string ToString()
         {
-            return string.Format("Cache Identity - Key: '{0}', L1 Expiry: '{1}' minutes, L2 Expiry: '{2}' minutes",
+            return string.Format("Cache Identity - Key: '{0}', Expiry: '{1}' minutes",
                 CacheKey,
-                L1CacheExpiry.TotalMinutes,
-                L2CacheExpiry.TotalMinutes);
+                Expiry.TotalMinutes);
         }
     }
 }

@@ -5,18 +5,18 @@ using System.Threading.Tasks;
 
 namespace InceptionCache.Tests
 {
-    public class CacheManagerTest : CacheManager
+    public class CacheManagerTest : InceptionCacheManager
     {
         public CacheManagerTest(
-            ILoggingService loggingService, 
-            ICacheProvider l1Cache, 
-            ICacheProvider l2Cache) : base(loggingService, l1Cache, l2Cache)
+            ILoggingService loggingService,
+            ICacheProvider[] cacheProviders)
+            : base(loggingService, cacheProviders)
         {
         }
 
         public Task<TestCacheObject> Get(CacheIdentity cacheIdentity, Func<Task<TestCacheObject>> dbQuery)
         {
-            return FindItemInCache(cacheIdentity, dbQuery);
+            return FindItemInCacheOrDataStore(cacheIdentity, dbQuery);
         }
     }
 }

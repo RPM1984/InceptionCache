@@ -20,5 +20,7 @@ namespace InceptionCache.Core
 
         Task DeleteAsync(string key);
         void Delete(string key);
+
+        string Name { get; }
     }
 }

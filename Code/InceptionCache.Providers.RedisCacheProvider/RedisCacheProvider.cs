@@ -169,5 +169,13 @@ namespace InceptionCache.Providers.RedisCacheProvider
                 _loggingService.Error(exc);
             }
         }
+
+        public string Name
+        {
+            get
+            {
+                return "In-Memory Cache Provider";
+            }
+        }
     }
 }
