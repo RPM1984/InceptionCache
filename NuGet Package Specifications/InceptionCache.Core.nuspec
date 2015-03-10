@@ -3,19 +3,23 @@
     <metadata>
         <id>InceptionCache.Core</id>
         <version>0.0</version>
-        <title>TODO</title>
+        <title>InceptionCache.Core</title>
         <authors>Ryan Miranda</authors>
         <owners>Ryan Miranda</owners>
         <licenseUrl>https://raw.githubusercontent.com/RPM1984/InceptionCache/master/LICENSE</licenseUrl>
         <projectUrl>https://github.com/RPM1984/InceptionCache</projectUrl>
-        <iconUrl></iconUrl>
         <requireLicenseAcceptance>false</requireLicenseAcceptance>
-        <description>TODO</description>
-        <summary>TODO</summary>
+        <description>Multi-layered cache manager</description>
+        <summary />
         <copyright>2015</copyright>
         <language>en-AU</language>
-        <tags>TODO</tags>
+        <tags>cache .net</tags>
         <dependencies>
+            <dependency id="SimpleLogging.Core" version="0.5.0" />
+            <dependency id="Shouldly" version="2.4.0" />
         </dependencies>
     </metadata>
+    <files>
+        <file src="..\Code\InceptionCache.Core\bin\Release\InceptionCache.Core.dll" target="lib\net45\InceptionCache.Core.dll" />
+    </files>
 </package>

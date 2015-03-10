@@ -1,21 +1,24 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <package xmlns="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd">
     <metadata>
-        <id>InceptionCache.Core</id>
+        <id>InceptionCache.Providers.InMemoryCacheProvider</id>
         <version>0.0</version>
-        <title>TODO</title>
+        <title>InceptionCache.Providers.InMemoryCacheProvider</title>
         <authors>Ryan Miranda</authors>
         <owners>Ryan Miranda</owners>
         <licenseUrl>https://raw.githubusercontent.com/RPM1984/InceptionCache/master/LICENSE</licenseUrl>
-        <projectUrl>https://github.com/RPM1984/InceptionCache</projectUrl>
-        <iconUrl></iconUrl>
+        <projectUrl>https://github.com/RPM1984/InceptionCache</projectUrl>        
         <requireLicenseAcceptance>false</requireLicenseAcceptance>
-        <description>TODO</description>
-        <summary>TODO</summary>
+        <description>In memory implementation of InceptionCache ICacheProvider</description>
+        <summary />
         <copyright>2015</copyright>
         <language>en-AU</language>
-        <tags>TODO</tags>
+        <tags>cache .net objectcache</tags>
         <dependencies>
+            <dependency id="InceptionCache.Core" version="0.1" />
         </dependencies>
     </metadata>
+    <files>
+        <file src="..\Code\InceptionCache.Providers.InMemoryCacheProvider\bin\Release\InceptionCache.Providers.InMemoryCacheProvider.dll" target="lib\net45\InceptionCache.Providers.InMemoryCacheProvider.dll" />
+    </files>
 </package>
