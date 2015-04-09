@@ -90,5 +90,32 @@ namespace InceptionCache.Tests
             A.CallTo(() => l2Cache.SetAsync(cacheIdentity.CacheKey, A<TestCacheObject>._, A<TimeSpan>._)).MustHaveHappened(Repeated.Exactly.Once);
             A.CallTo(() => dataStoreQuery.Invoke()).MustHaveHappened();
         }
+
+        [Fact]
+        public async Task GivenACacheIdentityWhichDoesntExistInAnyCacheAndIsNullInDataStore_FindItemInCache_ReturnsNullAndDoesntAddToAnyCaches()
+        {
+            // Arrange.
+            var loggingService = A.Fake<ILoggingService>();
+            var l1Cache = A.Fake<ICacheProvider>();
+            var l2Cache = A.Fake<ICacheProvider>();
+            var cacheLayer = new CacheManagerTest(loggingService, new[] { l1Cache, l2Cache });
+            const string cacheKey = "Test";
+            var expiry = TimeSpan.FromMinutes(1);
+            var cacheIdentity = new CacheIdentity(cacheKey, expiry);
+            var testCacheObject = A.Fake<TestCacheObject>();
+            Func<Task<TestCacheObject>> dataStoreQuery = () => Task.FromResult<TestCacheObject>(null);
+            A.CallTo(() => l1Cache.GetAsync<TestCacheObject>(cacheIdentity.CacheKey)).Returns(Task.FromResult<TestCacheObject>(null));
+            A.CallTo(() => l2Cache.GetAsync<TestCacheObject>(cacheIdentity.CacheKey)).Returns(Task.FromResult<TestCacheObject>(null));
+
+            // Act.
+            var result = await cacheLayer.Get(cacheIdentity, dataStoreQuery);
+
+            // Assert.
+            result.ShouldBe(null);
+            A.CallTo(() => l1Cache.GetAsync<TestCacheObject>(cacheIdentity.CacheKey)).MustHaveHappened(Repeated.Exactly.Once);
+            A.CallTo(() => l2Cache.GetAsync<TestCacheObject>(cacheIdentity.CacheKey)).MustHaveHappened(Repeated.Exactly.Once);
+            A.CallTo(() => l1Cache.SetAsync(cacheIdentity.CacheKey, A<TestCacheObject>._, A<TimeSpan>._)).MustHaveHappened(Repeated.Never);
+            A.CallTo(() => l2Cache.SetAsync(cacheIdentity.CacheKey, A<TestCacheObject>._, A<TimeSpan>._)).MustHaveHappened(Repeated.Never);
+        }
     }
 }

@@ -58,6 +58,12 @@ namespace InceptionCache.Core
             {
                 _loggingService.Debug("Fetching data from data store...");
                 result = await dataStoreQuery();
+
+                if (result == null)
+                {
+                    _loggingService.Info("Couldn't find data in data store. Not adding to any caches.");
+                    return null;
+                }
             }
 
             foreach (var cacheProviderMiss in cacheProviderMisses)
