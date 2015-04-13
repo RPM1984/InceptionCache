@@ -47,9 +47,10 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="CacheManagerFacts.cs" />
+    <Compile Include="InceptionCacheManagerFacts.cs" />
     <Compile Include="CacheManagerTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="RedisCacheProviderFacts.cs" />
     <Compile Include="TestCacheObject.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -59,6 +60,10 @@
     <ProjectReference Include="..\InceptionCache.Core\InceptionCache.Core.csproj">
       <Project>{b6812764-324f-4540-b8f0-f512cbfd50bb}</Project>
       <Name>InceptionCache.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\InceptionCache.Providers.RedisCacheProvider\InceptionCache.Providers.RedisCacheProvider.csproj">
+      <Project>{c1a7b24e-e0f6-4b0c-a7a9-f082a85a5279}</Project>
+      <Name>InceptionCache.Providers.RedisCacheProvider</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

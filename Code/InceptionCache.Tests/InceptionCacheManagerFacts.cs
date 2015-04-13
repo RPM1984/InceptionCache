@@ -8,7 +8,7 @@ using Xunit;
 
 namespace InceptionCache.Tests
 {
-    public class CacheManagerFacts
+    public class InceptionCacheManagerFacts
     {
         [Fact]
         public async Task GivenACacheIdentityWhichExistsInL1Cache_FindItemInCache_ReturnsItemFromL1Cache()
@@ -58,7 +58,7 @@ namespace InceptionCache.Tests
             result.ShouldNotBe(null);
             result.Key.ShouldBe(testCacheObject.Key);
             A.CallTo(() => l1Cache.GetAsync<TestCacheObject>(cacheIdentity.CacheKey)).MustHaveHappened(Repeated.Exactly.Once);
-            A.CallTo(() => l1Cache.SetAsync(cacheIdentity.CacheKey, A<TestCacheObject>._, A<TimeSpan>._)).MustHaveHappened(Repeated.Exactly.Once);
+            A.CallTo(() => l1Cache.AddAsync(cacheIdentity.CacheKey, A<TestCacheObject>._, A<TimeSpan>._)).MustHaveHappened(Repeated.Exactly.Once);
             A.CallTo(() => dataStoreQuery.Invoke()).MustNotHaveHappened();
         }
 
@@ -86,8 +86,8 @@ namespace InceptionCache.Tests
             result.Key.ShouldBe(testCacheObject.Key);
             A.CallTo(() => l1Cache.GetAsync<TestCacheObject>(cacheIdentity.CacheKey)).MustHaveHappened(Repeated.Exactly.Once);
             A.CallTo(() => l2Cache.GetAsync<TestCacheObject>(cacheIdentity.CacheKey)).MustHaveHappened(Repeated.Exactly.Once);
-            A.CallTo(() => l1Cache.SetAsync(cacheIdentity.CacheKey, A<TestCacheObject>._, A<TimeSpan>._)).MustHaveHappened(Repeated.Exactly.Once);
-            A.CallTo(() => l2Cache.SetAsync(cacheIdentity.CacheKey, A<TestCacheObject>._, A<TimeSpan>._)).MustHaveHappened(Repeated.Exactly.Once);
+            A.CallTo(() => l1Cache.AddAsync(cacheIdentity.CacheKey, A<TestCacheObject>._, A<TimeSpan>._)).MustHaveHappened(Repeated.Exactly.Once);
+            A.CallTo(() => l2Cache.AddAsync(cacheIdentity.CacheKey, A<TestCacheObject>._, A<TimeSpan>._)).MustHaveHappened(Repeated.Exactly.Once);
             A.CallTo(() => dataStoreQuery.Invoke()).MustHaveHappened();
         }
 
@@ -114,8 +114,8 @@ namespace InceptionCache.Tests
             result.ShouldBe(null);
             A.CallTo(() => l1Cache.GetAsync<TestCacheObject>(cacheIdentity.CacheKey)).MustHaveHappened(Repeated.Exactly.Once);
             A.CallTo(() => l2Cache.GetAsync<TestCacheObject>(cacheIdentity.CacheKey)).MustHaveHappened(Repeated.Exactly.Once);
-            A.CallTo(() => l1Cache.SetAsync(cacheIdentity.CacheKey, A<TestCacheObject>._, A<TimeSpan>._)).MustHaveHappened(Repeated.Never);
-            A.CallTo(() => l2Cache.SetAsync(cacheIdentity.CacheKey, A<TestCacheObject>._, A<TimeSpan>._)).MustHaveHappened(Repeated.Never);
+            A.CallTo(() => l1Cache.AddAsync(cacheIdentity.CacheKey, A<TestCacheObject>._, A<TimeSpan>._)).MustHaveHappened(Repeated.Never);
+            A.CallTo(() => l2Cache.AddAsync(cacheIdentity.CacheKey, A<TestCacheObject>._, A<TimeSpan>._)).MustHaveHappened(Repeated.Never);
         }
     }
 }

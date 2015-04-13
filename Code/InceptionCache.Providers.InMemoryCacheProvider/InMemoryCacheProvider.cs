@@ -55,12 +55,12 @@ namespace InceptionCache.Providers.InMemoryCacheProvider
             return Task.FromResult(Get<T>(keys));
         }
 
-        public async Task SetAsync<T>(string key, T value, TimeSpan expiry) where T : class
+        public async Task AddAsync<T>(string key, T value, TimeSpan expiry) where T : class
         {
-            Set(key, value, expiry);
+            Add(key, value, expiry);
         }
 
-        public void Set<T>(string key, T value, TimeSpan expiry) where T : class
+        public void Add<T>(string key, T value, TimeSpan expiry) where T : class
         {
             LogDebug<T>("SET", key);
 
@@ -76,16 +76,16 @@ namespace InceptionCache.Providers.InMemoryCacheProvider
             });
         }
 
-        public async Task SetAsync<T>(Dictionary<string, T> values, TimeSpan expiry) where T : class
+        public async Task AddAsync<T>(Dictionary<string, T> values, TimeSpan expiry) where T : class
         {
-            Set(values, expiry);
+            Add(values, expiry);
         }
 
-        public void Set<T>(Dictionary<string, T> values, TimeSpan expiry) where T : class
+        public void Add<T>(Dictionary<string, T> values, TimeSpan expiry) where T : class
         {
             foreach (var kv in values)
             {
-                Set(kv.Key, kv.Value, expiry);
+                Add(kv.Key, kv.Value, expiry);
             }
         }
 

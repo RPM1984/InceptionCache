@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using InceptionCache.Core;
 using InceptionCache.Core.Serialization;
 using Shouldly;
 using SimpleLogging.Core;
@@ -9,7 +8,7 @@ using StackExchange.Redis;
 
 namespace InceptionCache.Providers.RedisCacheProvider
 {
-    public class RedisCacheProvider : ICacheProvider
+    public class RedisCacheProvider : IRedisCacheProvider
     {
         private static string _endpoint;
         private static readonly Lazy<ConnectionMultiplexer> LazyConnection = new Lazy<ConnectionMultiplexer>(() => ConnectionMultiplexer.Connect(_endpoint));
@@ -39,8 +38,8 @@ namespace InceptionCache.Providers.RedisCacheProvider
         {
             try
             {
-                LogDebug<T>("GET", key);
-                return await Cache.GetAsync<T>(_serializer, key);
+                LogDebug<T>("Get STRING", key);
+                return await Cache.GetStringAsync<T>(_serializer, key);
             }
             catch (Exception exc)
             {
@@ -53,8 +52,8 @@ namespace InceptionCache.Providers.RedisCacheProvider
         {
             try
             {
-                LogDebug<T>("GET", key);
-                return Cache.Get<T>(_serializer, key);
+                LogDebug<T>("Get STRING", key);
+                return Cache.GetString<T>(_serializer, key);
             }
             catch (Exception exc)
             {
@@ -67,8 +66,8 @@ namespace InceptionCache.Providers.RedisCacheProvider
         {
             try
             {
-                LogDebug<T>("BATCH GET", string.Format("(multiple) ({0}) keys", keys.Length));
-                return Cache.GetAsync<T>(_serializer, keys);
+                LogDebug<T>("Get STRING (Batch)", string.Format("(multiple) ({0}) keys", keys.Length));
+                return Cache.GetStringAsync<T>(_serializer, keys);
             }
             catch (Exception exc)
             {
@@ -81,8 +80,8 @@ namespace InceptionCache.Providers.RedisCacheProvider
         {
             try
             {
-                LogDebug<T>("BATCH GET", string.Format("(multiple) ({0}) keys", keys.Length));
-                return Cache.Get<T>(_serializer, keys);
+                LogDebug<T>("Get STRING (BATCH)", string.Format("(multiple) ({0}) keys", keys.Length));
+                return Cache.GetString<T>(_serializer, keys);
             }
             catch (Exception exc)
             {
@@ -91,12 +90,12 @@ namespace InceptionCache.Providers.RedisCacheProvider
             }
         }
 
-        public async Task SetAsync<T>(string key, T value, TimeSpan expiry) where T : class
+        public async Task AddAsync<T>(string key, T value, TimeSpan expiry) where T : class
         {
             try
             {
-                LogDebug<T>("SET", key);
-                await Cache.SetAsync(_serializer, key, value, expiry);
+                LogDebug<T>("Add STRING", key);
+                await Cache.AddStringAsync(_serializer, key, value, expiry);
             }
             catch (Exception exc)
             {
@@ -104,12 +103,12 @@ namespace InceptionCache.Providers.RedisCacheProvider
             }
         }
 
-        public void Set<T>(string key, T value, TimeSpan expiry) where T : class
+        public void Add<T>(string key, T value, TimeSpan expiry) where T : class
         {
             try
             {
-                LogDebug<T>("SET", key);
-                Cache.Set(_serializer, key, value, expiry);
+                LogDebug<T>("Add STRING", key);
+                Cache.AddString(_serializer, key, value, expiry);
             }
             catch (Exception exc)
             {
@@ -117,12 +116,12 @@ namespace InceptionCache.Providers.RedisCacheProvider
             }
         }
 
-        public async Task SetAsync<T>(Dictionary<string, T> values, TimeSpan expiry) where T : class
+        public async Task AddAsync<T>(Dictionary<string, T> values, TimeSpan expiry) where T : class
         {
             try
             {
-                LogDebug<T>("BATCH SET", string.Format("(multiple) ({0}) keys", values.Keys.Count));
-                await Cache.SetAsync(_serializer, values, expiry);
+                LogDebug<T>("Add STRING (BATCH)", string.Format("(multiple) ({0}) keys", values.Keys.Count));
+                await Cache.AddStringAsync(_serializer, values, expiry);
             }
             catch (Exception exc)
             {
@@ -130,12 +129,12 @@ namespace InceptionCache.Providers.RedisCacheProvider
             }
         }
 
-        public void Set<T>(Dictionary<string, T> values, TimeSpan expiry) where T : class
+        public void Add<T>(Dictionary<string, T> values, TimeSpan expiry) where T : class
         {
             try
             {
-                LogDebug<T>("BATCH SET", string.Format("(multiple) ({0}) keys", values.Keys.Count));
-                Cache.Set(_serializer, values, expiry);
+                LogDebug<T>("Add STRING (BATCH)", string.Format("(multiple) ({0}) keys", values.Keys.Count));
+                Cache.AddString(_serializer, values, expiry);
             }
             catch (Exception exc)
             {
@@ -143,12 +142,12 @@ namespace InceptionCache.Providers.RedisCacheProvider
             }
 
         }
-
+        
         public async Task DeleteAsync(string key)
         {
             try
             {
-                LogDebug<string>("DELETE", key);
+                LogDebug<string>("Delete STRING", key);
                 await Cache.KeyDeleteAsync(key);
             }
             catch (Exception exc)
@@ -161,7 +160,7 @@ namespace InceptionCache.Providers.RedisCacheProvider
         {
             try
             {
-                LogDebug<string>("DELETE", key);
+                LogDebug<string>("Delete STRING", key);
                 Cache.KeyDelete(key);
             }
             catch (Exception exc)
@@ -175,6 +174,72 @@ namespace InceptionCache.Providers.RedisCacheProvider
             get
             {
                 return "Redis Cache Provider";
+            }
+        }
+
+        public async Task<T[]> GetSetAsync<T>(string key) where T : class
+        {
+            try
+            {
+                LogDebug<T>("Get SET", key);
+                return await Cache.GetSetAsync<T>(_serializer, key);
+            }
+            catch (Exception exc)
+            {
+                _loggingService.Error(exc);
+                return null;
+            }
+        }
+
+        public async Task AddToSetAsync<T>(string key, T[] values, TimeSpan? expiry) where T : class
+        {
+            try
+            {
+                LogDebug<T>("Add SET", key);
+                await Cache.AddManyToSetAsync(_serializer, key, values, expiry);
+            }
+            catch (Exception exc)
+            {
+                _loggingService.Error(exc);
+            }
+        }
+
+        public async Task AddToSetAsync<T>(string key, T value, TimeSpan? expiry) where T : class
+        {
+            try
+            {
+                LogDebug<T>("Add SET", key);
+                await Cache.AddSingleToSetAsync(_serializer, key, value, expiry);
+            }
+            catch (Exception exc)
+            {
+                _loggingService.Error(exc);
+            }
+        }
+
+        public async Task DeleteFromSetAsync<T>(string key, T[] values, TimeSpan? expiry) where T : class
+        {
+            try
+            {
+                LogDebug<T>("Delete items from SET", key);
+                await Cache.RemoveManyFromSetAsync(_serializer, key, values, expiry);
+            }
+            catch (Exception exc)
+            {
+                _loggingService.Error(exc);
+            }
+        }
+
+        public async Task DeleteFromSetAsync<T>(string key, T value, TimeSpan? expiry) where T : class
+        {
+            try
+            {
+                LogDebug<T>("Delete item SET", key);
+                await Cache.RemoveSingleFromSetAsync(_serializer, key, value, expiry);
+            }
+            catch (Exception exc)
+            {
+                _loggingService.Error(exc);
             }
         }
     }

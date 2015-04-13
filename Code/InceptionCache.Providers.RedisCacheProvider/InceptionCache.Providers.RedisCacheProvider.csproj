@@ -44,6 +44,7 @@
     <Reference Include="Microsoft.CSharp" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="IRedisCacheProvider.cs" />
     <Compile Include="RedisCacheExtensions.cs" />
     <Compile Include="RedisCacheProvider.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

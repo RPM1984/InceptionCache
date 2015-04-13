@@ -72,7 +72,7 @@ namespace InceptionCache.Core
 
                 var expiryOnThisLevel = new TimeSpan(cacheIdentity.Expiry.Ticks / ((_cacheProviders.Length + 1) - (cacheProviderMiss + 1)));
                 _loggingService.Debug("Adding to L{0} cache with an expiry of {1} minutes...", cacheProviderMiss + 1, expiryOnThisLevel.TotalMinutes);
-                await cacheProvider.SetAsync(cacheIdentity.CacheKey, result, expiryOnThisLevel);
+                await cacheProvider.AddAsync(cacheIdentity.CacheKey, result, expiryOnThisLevel);
             }
             
             return result;
