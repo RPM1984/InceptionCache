@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using FakeItEasy;
@@ -17,7 +18,7 @@ namespace InceptionCache.Tests
 
             public SetFacts()
             {
-                _redis = GetRedisCacheProvider(false); // change to false to use cloud.
+                _redis = GetRedisCacheProvider(true); // change to false to use cloud.
             }
             
             private static RedisCacheProvider GetRedisCacheProvider(bool isLocal)
@@ -101,6 +102,77 @@ namespace InceptionCache.Tests
                 var members = await _redis.GetSetAsync<TestCacheObject>(key);
                 members.ShouldNotBe(null);
                 members.Count().ShouldBe(0);
+            }
+
+            [Fact]
+            public async Task GivenTwoSetsWithTwoItems_GetSetsAsync_ReturnsTwoSetsWithTwoItems()
+            {
+                // Arrange.
+                const string keyA = "a";
+                const string keyB = "b";
+                var keyAItems = new[] { new TestCacheObject("a"), new TestCacheObject("b") };
+                var keyBItems = new[] { new TestCacheObject("c"), new TestCacheObject("d") };
+                await _redis.AddToSetAsync(keyA, keyAItems, TimeSpan.FromMinutes(1));
+                await _redis.AddToSetAsync(keyB, keyBItems, TimeSpan.FromMinutes(1));
+
+                // Act.
+                var setsAndMembers = await _redis.GetSetsAsync<TestCacheObject>(new[] { keyA, keyB });
+
+                // Assert.
+                setsAndMembers.ShouldNotBe(null);
+                setsAndMembers.Keys.Count.ShouldBe(2);
+                setsAndMembers.ShouldContain(member => member.Key == keyA);
+                setsAndMembers.ShouldContain(member => member.Key == keyB);
+                foreach (var keyAItem in keyAItems)
+                {
+                    TestCacheObject item = keyAItem;
+                    setsAndMembers[keyA].ShouldContain(member => member.Key == item.Key);
+                }
+                foreach (var keyBItem in keyBItems)
+                {
+                    TestCacheObject item = keyBItem;
+                    setsAndMembers[keyB].ShouldContain(member => member.Key == item.Key);
+                }
+            }
+
+            [Fact]
+            public async Task GivenTwoSetsEachWithTwoItems_AddToSetsAsync_ResultsInTwoSetsEachWithTwoItems()
+            {
+                // Arrange.
+                const string keyA = "a";
+                const string keyB = "b";
+                var keyAItems = new[] { new TestCacheObject("a"), new TestCacheObject("b") };
+                var keyBItems = new[] { new TestCacheObject("c"), new TestCacheObject("d") };
+                var sets = new Dictionary<string, TestCacheObject[]>
+                {
+                    {keyA, keyAItems},
+                    {keyB, keyBItems}
+                };
+                var setsAndExpiries = new Dictionary<string, TimeSpan?>
+                {
+                    {keyA, TimeSpan.FromMinutes(1)},
+                    {keyB, TimeSpan.FromMinutes(1)}
+                };
+
+                // Act.
+                await _redis.AddToSetsAsync(sets, setsAndExpiries);
+                
+                // Assert.
+                var setsAndMembers = await _redis.GetSetsAsync<TestCacheObject>(new[] { keyA, keyB });
+                setsAndMembers.ShouldNotBe(null);
+                setsAndMembers.Keys.Count.ShouldBe(2);
+                setsAndMembers.ShouldContain(member => member.Key == keyA);
+                setsAndMembers.ShouldContain(member => member.Key == keyB);
+                foreach (var keyAItem in keyAItems)
+                {
+                    TestCacheObject item = keyAItem;
+                    setsAndMembers[keyA].ShouldContain(member => member.Key == item.Key);
+                }
+                foreach (var keyBItem in keyBItems)
+                {
+                    TestCacheObject item = keyBItem;
+                    setsAndMembers[keyB].ShouldContain(member => member.Key == item.Key);
+                }
             }
         }
     }

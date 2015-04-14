@@ -113,6 +113,29 @@ namespace InceptionCache.Providers.RedisCacheProvider
             return items.ToArray();
         }
 
+        public static async Task<Dictionary<string,T[]>> GetSetsAsync<T>(this IDatabase cache, ISerializer serializer, string[] keys)
+        {
+            var batch = cache.CreateBatch();
+
+            var tasks = keys.Select(key => new KeyValuePair<string, Task<RedisValue[]>>(key, batch.SetMembersAsync(key))).ToList();
+            
+            batch.Execute();
+
+            await Task.WhenAll(tasks.Select(x => x.Value));
+
+            return tasks.ToDictionary(task => task.Key, task => task.Value.Result.Select(m => serializer.Deserialize<T>(m)).ToArray());
+        }
+        
+        public static async Task AddManyToSetsAsync<T>(this IDatabase cache, ISerializer serializer, Dictionary<string, T[]> keysAndValues, Dictionary<string, TimeSpan?> expiries) where T : class
+        {
+            var batch = cache.CreateBatch();
+            var tasks = keysAndValues.Select(key => batch.SetAddAsync(key.Key, key.Value.Select(value => (RedisValue)serializer.Serialize(value)).ToArray())).ToList();
+            var expireTasks = expiries.Select(key => batch.KeyExpireAsync(key.Key, key.Value)).ToList();
+            batch.Execute();
+            await Task.WhenAll(tasks);
+            await Task.WhenAll(expireTasks);
+        }
+
         private static RedisValue[] GetSerializedRedisValues<T>(ISerializer serializer, IEnumerable<T> values)
         {
             return values.Select(value => (RedisValue)serializer.Serialize(value)).ToArray();

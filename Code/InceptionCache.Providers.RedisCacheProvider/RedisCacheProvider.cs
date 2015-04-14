@@ -190,6 +190,20 @@ namespace InceptionCache.Providers.RedisCacheProvider
             }
         }
 
+        public async Task<Dictionary<string, T[]>> GetSetsAsync<T>(string[] keys) where T : class
+        {
+            try
+            {
+                LogDebug<T>("Get SET (BATCH)", string.Format("(multiple) ({0}) keys", keys.Length));
+                return await Cache.GetSetsAsync<T>(_serializer, keys);
+            }
+            catch (Exception exc)
+            {
+                _loggingService.Error(exc);
+                return null;
+            }
+        }
+
         public async Task AddToSetAsync<T>(string key, T[] values, TimeSpan? expiry) where T : class
         {
             try
@@ -209,6 +223,19 @@ namespace InceptionCache.Providers.RedisCacheProvider
             {
                 LogDebug<T>("Add SET", key);
                 await Cache.AddSingleToSetAsync(_serializer, key, value, expiry);
+            }
+            catch (Exception exc)
+            {
+                _loggingService.Error(exc);
+            }
+        }
+
+        public async Task AddToSetsAsync<T>(Dictionary<string, T[]> keysAndValues, Dictionary<string, TimeSpan?> expiries) where T : class
+        {
+            try
+            {
+                LogDebug<T>("Add SET (BATCH)", string.Format("(multiple) ({0}) keys", keysAndValues.Count));
+                await Cache.AddManyToSetsAsync(_serializer, keysAndValues, expiries);
             }
             catch (Exception exc)
             {
