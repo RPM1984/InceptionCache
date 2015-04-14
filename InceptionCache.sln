@@ -17,8 +17,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{0E857EA7
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "InceptionCache.Samples.Nancy", "Samples\Nancy\InceptionCache.Samples.Nancy\InceptionCache.Samples.Nancy.csproj", "{9EA673E1-134D-40AD-A843-5F86F499A11A}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{871DDB50-5C3B-411E-8166-A98A21A27A33}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU

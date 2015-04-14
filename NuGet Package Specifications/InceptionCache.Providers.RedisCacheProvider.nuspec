@@ -15,7 +15,7 @@
         <language>en-AU</language>
         <tags>cache .net redis</tags>
         <dependencies>
-            <dependency id="InceptionCache.Core" version="0.1" />
+            <dependency id="InceptionCache.Core" version="0.3.1" />
 			<dependency id="StackExchange.Redis" version="1.0.394" />
         </dependencies>
     </metadata>

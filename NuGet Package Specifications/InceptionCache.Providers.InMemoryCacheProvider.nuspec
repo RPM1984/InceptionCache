@@ -15,7 +15,7 @@
         <language>en-AU</language>
         <tags>cache .net objectcache</tags>
         <dependencies>
-            <dependency id="InceptionCache.Core" version="0.1" />
+            <dependency id="InceptionCache.Core" version="0.3.1" />
         </dependencies>
     </metadata>
     <files>
