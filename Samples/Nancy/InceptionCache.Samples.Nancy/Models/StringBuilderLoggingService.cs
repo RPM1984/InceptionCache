@@ -73,7 +73,7 @@ namespace InceptionCache.Samples.Nancy.Models
 
         public void Error(Exception exception, string message = null, bool isStackTraceIncluded = true)
         {
-            throw new NotImplementedException();
+            AddToLog("ERROR", exception.Message);
         }
 
         public void Fatal(string message)

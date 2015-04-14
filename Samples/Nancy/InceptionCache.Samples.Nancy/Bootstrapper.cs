@@ -1,7 +1,6 @@
 ﻿using System.Configuration;
 using System.Runtime.Caching;
 using InceptionCache.Core;
-using InceptionCache.Core.Serialization;
 using InceptionCache.Providers.RedisCacheProvider;
 using InceptionCache.Samples.Nancy.Models;
 using InceptionCache.Samples.Nancy.Services;
@@ -29,8 +28,7 @@ namespace InceptionCache.Samples.Nancy
             // Cache Level 2 - Redis
             ICacheProvider l2Cache = new RedisCacheProvider(
                 ConfigurationManager.AppSettings["RedisHost"],
-                loggingService, 
-                new BinarySerializer());
+                loggingService);
             l2Cache.Delete("Test-Cache-Key");
 
             container.Register<IDataService>(new DataService(

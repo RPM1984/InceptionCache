@@ -2,7 +2,6 @@
 using System.Linq;
 using System.Threading.Tasks;
 using FakeItEasy;
-using InceptionCache.Core.Serialization;
 using InceptionCache.Providers.RedisCacheProvider;
 using Shouldly;
 using SimpleLogging.Core;
@@ -18,30 +17,15 @@ namespace InceptionCache.Tests
 
             public SetFacts()
             {
-                _redis = GetRedisCacheProvider(false); // change to false to use cloud.
+                _redis = GetRedisCacheProvider(true); // change to false to use cloud.
             }
-
-            private static RedisCacheProvider RedisCacheProviderCloud
-            {
-                get
-                {
-                    var loggingService = A.Fake<ILoggingService>();
-                    return new RedisCacheProvider("pub-redis-18660.ap-southeast-2-1.1.ec2.garantiadata.com:18660,ssl=false,password=ic.redis", loggingService, new BinarySerializer());
-                }
-            }
-
-            private static RedisCacheProvider RedisCacheProviderLocalhost
-            {
-                get
-                {
-                    var loggingService = A.Fake<ILoggingService>();
-                    return new RedisCacheProvider("localhost", loggingService, new BinarySerializer());
-                }
-            }
-
+            
             private static RedisCacheProvider GetRedisCacheProvider(bool isLocal)
             {
-                return isLocal ? RedisCacheProviderLocalhost : RedisCacheProviderCloud;
+                var loggingService = A.Fake<ILoggingService>();
+                return new RedisCacheProvider(isLocal ? 
+                    "localhost" : "pub-redis-18660.ap-southeast-2-1.1.ec2.garantiadata.com:18660,ssl=false,password=ic.redis", 
+                    loggingService);
             }
 
             [Fact]

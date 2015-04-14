@@ -16,15 +16,14 @@ namespace InceptionCache.Providers.RedisCacheProvider
         private readonly ILoggingService _loggingService;
         private readonly ISerializer _serializer;
 
-        public RedisCacheProvider(string endpoint, ILoggingService loggingService, ISerializer serializer)
+        public RedisCacheProvider(string endpoint, ILoggingService loggingService, ISerializer serializer = null)
         {
             endpoint.ShouldNotBe(null);
             loggingService.ShouldNotBe(null);
-            serializer.ShouldNotBe(null);
-
+            
             _endpoint = endpoint;
             _loggingService = loggingService;
-            _serializer = serializer;
+            _serializer = serializer ?? new ProtoBufSerializer();
 
             _loggingService.Info("Created Redis Cache at endpoint: {0}", endpoint);
         }
