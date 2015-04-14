@@ -14,13 +14,34 @@ namespace InceptionCache.Tests
     {
         public class SetFacts : RedisCacheProviderFacts
         {
-            private static RedisCacheProvider RedisCacheProvider
+            private readonly RedisCacheProvider _redis;
+
+            public SetFacts()
+            {
+                _redis = GetRedisCacheProvider(false); // change to false to use cloud.
+            }
+
+            private static RedisCacheProvider RedisCacheProviderCloud
+            {
+                get
+                {
+                    var loggingService = A.Fake<ILoggingService>();
+                    return new RedisCacheProvider("pub-redis-18660.ap-southeast-2-1.1.ec2.garantiadata.com:18660,ssl=false,password=ic.redis", loggingService, new BinarySerializer());
+                }
+            }
+
+            private static RedisCacheProvider RedisCacheProviderLocalhost
             {
                 get
                 {
                     var loggingService = A.Fake<ILoggingService>();
                     return new RedisCacheProvider("localhost", loggingService, new BinarySerializer());
                 }
+            }
+
+            private static RedisCacheProvider GetRedisCacheProvider(bool isLocal)
+            {
+                return isLocal ? RedisCacheProviderLocalhost : RedisCacheProviderCloud;
             }
 
             [Fact]
@@ -31,10 +52,10 @@ namespace InceptionCache.Tests
                 var item = new TestCacheObject("a");
 
                 // Act.
-                await RedisCacheProvider.AddToSetAsync(key, item, TimeSpan.FromMinutes(1));
+                await _redis.AddToSetAsync(key, item, TimeSpan.FromMinutes(1));
                 
                 // Assert.
-                var members = await RedisCacheProvider.GetSetAsync<TestCacheObject>(key);
+                var members = await _redis.GetSetAsync<TestCacheObject>(key);
                 members.ShouldNotBe(null);
                 members.Count().ShouldBe(1);
                 members.ShouldContain(member => member.Key == item.Key);
@@ -48,10 +69,10 @@ namespace InceptionCache.Tests
                 var items = new[] { new TestCacheObject("a"), new TestCacheObject("b") };
 
                 // Act.
-                await RedisCacheProvider.AddToSetAsync(key, items, TimeSpan.FromMinutes(1));
+                await _redis.AddToSetAsync(key, items, TimeSpan.FromMinutes(1));
 
                 // Assert.
-                var members = await RedisCacheProvider.GetSetAsync<TestCacheObject>(key);
+                var members = await _redis.GetSetAsync<TestCacheObject>(key);
                 members.ShouldNotBe(null);
                 members.Count().ShouldBe(2);
                 foreach (var item in items)
@@ -68,13 +89,13 @@ namespace InceptionCache.Tests
                 var key = DateTime.Now.Ticks.ToString();
                 var itemOne = new TestCacheObject("a");
                 var itemTwo = new TestCacheObject("b");
-                await RedisCacheProvider.AddToSetAsync(key, new[] { itemOne, itemTwo }, TimeSpan.FromMinutes(1));
+                await _redis.AddToSetAsync(key, new[] { itemOne, itemTwo }, TimeSpan.FromMinutes(1));
 
                 // Act.
-                await RedisCacheProvider.DeleteFromSetAsync(key, itemOne, TimeSpan.FromMinutes(1));
+                await _redis.DeleteFromSetAsync(key, itemOne, TimeSpan.FromMinutes(1));
 
                 // Assert.
-                var members = await RedisCacheProvider.GetSetAsync<TestCacheObject>(key);
+                var members = await _redis.GetSetAsync<TestCacheObject>(key);
                 members.ShouldNotBe(null);
                 members.Count().ShouldBe(1);
                 members.ShouldContain(member => member.Key == itemTwo.Key);
@@ -87,13 +108,13 @@ namespace InceptionCache.Tests
                 // Arrange.
                 var key = DateTime.Now.Ticks.ToString();
                 var items = new[] { new TestCacheObject("a"), new TestCacheObject("b") };
-                await RedisCacheProvider.AddToSetAsync(key, items, TimeSpan.FromMinutes(1));
+                await _redis.AddToSetAsync(key, items, TimeSpan.FromMinutes(1));
 
                 // Act.
-                await RedisCacheProvider.DeleteFromSetAsync(key, items, TimeSpan.FromMinutes(1));
+                await _redis.DeleteFromSetAsync(key, items, TimeSpan.FromMinutes(1));
 
                 // Assert.
-                var members = await RedisCacheProvider.GetSetAsync<TestCacheObject>(key);
+                var members = await _redis.GetSetAsync<TestCacheObject>(key);
                 members.ShouldNotBe(null);
                 members.Count().ShouldBe(0);
             }
