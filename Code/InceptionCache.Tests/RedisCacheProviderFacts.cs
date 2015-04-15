@@ -14,7 +14,20 @@ namespace InceptionCache.Tests
     {
         public class SetFacts : RedisCacheProviderFacts
         {
-            private readonly RedisCacheProvider _redis = new RedisCacheProvider("localhost", A.Fake<ILoggingService>());
+            private readonly RedisCacheProvider _redis;
+
+            public SetFacts()
+            {
+                _redis = GetRedisCacheProvider(false); // change to false to use cloud.
+            }
+            
+            private static RedisCacheProvider GetRedisCacheProvider(bool isLocal)
+            {
+                var loggingService = A.Fake<ILoggingService>();
+                return new RedisCacheProvider(isLocal ? 
+                    "localhost" : "pub-redis-18660.ap-southeast-2-1.1.ec2.garantiadata.com:18660,ssl=false,password=ic.redis", 
+                    loggingService);
+            }
 
             [Fact]
             public async Task GivenASingleItem_AddingToSet_ResultsInASetWithOneItem()
