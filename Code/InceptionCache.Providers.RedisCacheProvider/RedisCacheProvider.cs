@@ -61,12 +61,12 @@ namespace InceptionCache.Providers.RedisCacheProvider
             }
         }
 
-        public Task<T[]> GetAsync<T>(string[] keys) where T : class
+        public async Task<T[]> GetAsync<T>(string[] keys) where T : class
         {
             try
             {
                 LogDebug<T>("Get STRING (Batch)", string.Format("(multiple) ({0}) keys", keys.Length));
-                return Cache.GetStringAsync<T>(_serializer, keys);
+                return await Cache.GetStringAsync<T>(_serializer, keys);
             }
             catch (Exception exc)
             {

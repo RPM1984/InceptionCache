@@ -18,7 +18,7 @@ namespace InceptionCache.Tests
 
             public SetFacts()
             {
-                _redis = GetRedisCacheProvider(false); // change to false to use cloud.
+                _redis = GetRedisCacheProvider(true); // change to false to use cloud.
             }
             
             private static RedisCacheProvider GetRedisCacheProvider(bool isLocal)
