@@ -18,14 +18,14 @@ namespace InceptionCache.Tests
 
             public SetFacts()
             {
-                _redis = GetRedisCacheProvider(true); // change to false to use cloud.
+                _redis = GetRedisCacheProvider(false); // change to false to use cloud.
             }
             
             private static RedisCacheProvider GetRedisCacheProvider(bool isLocal)
             {
                 var loggingService = A.Fake<ILoggingService>();
-                return new RedisCacheProvider(isLocal ? 
-                    "localhost" : "pub-redis-18660.ap-southeast-2-1.1.ec2.garantiadata.com:18660,ssl=false,password=ic.redis", 
+                return new RedisCacheProvider(isLocal ?
+                    "localhost" : "pub-redis-13695.us-east-1-1.2.ec2.garantiadata.com:13695,ssl=false,password=ic-rpm1984", 
                     loggingService);
             }
 
