@@ -11,26 +11,39 @@ namespace InceptionCache.Providers.RedisCacheProvider
     public class RedisCacheProvider : IRedisCacheProvider
     {
         private static string _endpoint;
-        private static readonly Lazy<ConnectionMultiplexer> LazyConnection = new Lazy<ConnectionMultiplexer>(() => ConnectionMultiplexer.Connect(_endpoint));
-        private static IDatabase Cache { get { return LazyConnection.Value.GetDatabase(); } }
+
+        private static Lazy<ConnectionMultiplexer> _lazyConnection =
+            new Lazy<ConnectionMultiplexer>(() => ConnectionMultiplexer.Connect(_endpoint));
+
         private readonly ILoggingService _loggingService;
         private readonly ISerializer _serializer;
 
-        public RedisCacheProvider(string endpoint, ILoggingService loggingService, ISerializer serializer = null)
+        public RedisCacheProvider(Lazy<ConnectionMultiplexer> connectionMultiplexer,
+            ILoggingService loggingService,
+            ISerializer serializer = null)
         {
-            endpoint.ShouldNotBe(null);
+            connectionMultiplexer.ShouldNotBe(null);
             loggingService.ShouldNotBe(null);
-            
-            _endpoint = endpoint;
+
+            _lazyConnection = connectionMultiplexer;
             _loggingService = loggingService;
             _serializer = serializer ?? new ProtoBufSerializer();
+        }
 
+        public RedisCacheProvider(string endpoint, 
+            ILoggingService loggingService, 
+            ISerializer serializer = null)
+            : this(_lazyConnection, loggingService, serializer)
+        {
+            endpoint.ShouldNotBe(null);
+
+            _endpoint = endpoint;
             _loggingService.Info("Created Redis Cache at endpoint: {0}", endpoint);
         }
 
-        private void LogDebug<T>(string operation, string key)
+        private static IDatabase Cache
         {
-            _loggingService.Debug(string.Format("Redis Cache|{0}|Type:{1}|Key:{2}", operation, typeof(T).Name, key));
+            get { return _lazyConnection.Value.GetDatabase(); }
         }
 
         public async Task<T> GetAsync<T>(string key) where T : class
@@ -139,9 +152,8 @@ namespace InceptionCache.Providers.RedisCacheProvider
             {
                 _loggingService.Error(exc);
             }
-
         }
-        
+
         public async Task DeleteAsync(string key)
         {
             try
@@ -170,10 +182,7 @@ namespace InceptionCache.Providers.RedisCacheProvider
 
         public string Name
         {
-            get
-            {
-                return "Redis Cache Provider";
-            }
+            get { return "Redis Cache Provider"; }
         }
 
         public async Task<T[]> GetSetAsync<T>(string key) where T : class
@@ -230,7 +239,8 @@ namespace InceptionCache.Providers.RedisCacheProvider
             }
         }
 
-        public async Task AddToSetsAsync<T>(Dictionary<string, T[]> keysAndValues, Dictionary<string, TimeSpan?> expiries) where T : class
+        public async Task AddToSetsAsync<T>(Dictionary<string, T[]> keysAndValues,
+            Dictionary<string, TimeSpan?> expiries) where T : class
         {
             try
             {
@@ -267,6 +277,11 @@ namespace InceptionCache.Providers.RedisCacheProvider
             {
                 _loggingService.Error(exc);
             }
+        }
+
+        private void LogDebug<T>(string operation, string key)
+        {
+            _loggingService.Debug(string.Format("Redis Cache|{0}|Type:{1}|Key:{2}", operation, typeof (T).Name, key));
         }
     }
 }
