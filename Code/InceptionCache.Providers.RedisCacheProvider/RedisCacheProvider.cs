@@ -55,7 +55,7 @@ namespace InceptionCache.Providers.RedisCacheProvider
             }
             catch (Exception exc)
             {
-                _loggingService.Error(exc);
+                LogError(key, exc);
                 return null;
             }
         }
@@ -69,7 +69,7 @@ namespace InceptionCache.Providers.RedisCacheProvider
             }
             catch (Exception exc)
             {
-                _loggingService.Error(exc);
+                LogError(key, exc);
                 return null;
             }
         }
@@ -83,7 +83,10 @@ namespace InceptionCache.Providers.RedisCacheProvider
             }
             catch (Exception exc)
             {
-                _loggingService.Error(exc);
+                foreach (var key in keys)
+                {
+                    LogError(key, exc);
+                }
                 return null;
             }
         }
@@ -97,7 +100,10 @@ namespace InceptionCache.Providers.RedisCacheProvider
             }
             catch (Exception exc)
             {
-                _loggingService.Error(exc);
+                foreach (var key in keys)
+                {
+                    LogError(key, exc);
+                }
                 return null;
             }
         }
@@ -111,7 +117,7 @@ namespace InceptionCache.Providers.RedisCacheProvider
             }
             catch (Exception exc)
             {
-                _loggingService.Error(exc);
+                LogError(key, exc);
             }
         }
 
@@ -124,7 +130,7 @@ namespace InceptionCache.Providers.RedisCacheProvider
             }
             catch (Exception exc)
             {
-                _loggingService.Error(exc);
+                LogError(key, exc);
             }
         }
 
@@ -137,7 +143,10 @@ namespace InceptionCache.Providers.RedisCacheProvider
             }
             catch (Exception exc)
             {
-                _loggingService.Error(exc);
+                foreach (var key in values.Keys)
+                {
+                    LogError(key, exc);
+                }
             }
         }
 
@@ -150,7 +159,10 @@ namespace InceptionCache.Providers.RedisCacheProvider
             }
             catch (Exception exc)
             {
-                _loggingService.Error(exc);
+                foreach (var key in values.Keys)
+                {
+                    LogError(key, exc);
+                }
             }
         }
 
@@ -163,7 +175,7 @@ namespace InceptionCache.Providers.RedisCacheProvider
             }
             catch (Exception exc)
             {
-                _loggingService.Error(exc);
+                LogError(key, exc);
             }
         }
 
@@ -176,7 +188,7 @@ namespace InceptionCache.Providers.RedisCacheProvider
             }
             catch (Exception exc)
             {
-                _loggingService.Error(exc);
+                LogError(key, exc);
             }
         }
 
@@ -194,7 +206,7 @@ namespace InceptionCache.Providers.RedisCacheProvider
             }
             catch (Exception exc)
             {
-                _loggingService.Error(exc);
+                LogError(key, exc);
                 return null;
             }
         }
@@ -208,7 +220,10 @@ namespace InceptionCache.Providers.RedisCacheProvider
             }
             catch (Exception exc)
             {
-                _loggingService.Error(exc);
+                foreach (var key in keys)
+                {
+                    LogError(key, exc);
+                }
                 return null;
             }
         }
@@ -222,7 +237,7 @@ namespace InceptionCache.Providers.RedisCacheProvider
             }
             catch (Exception exc)
             {
-                _loggingService.Error(exc);
+                LogError(key, exc);
             }
         }
 
@@ -235,7 +250,7 @@ namespace InceptionCache.Providers.RedisCacheProvider
             }
             catch (Exception exc)
             {
-                _loggingService.Error(exc);
+                LogError(key, exc);
             }
         }
 
@@ -249,7 +264,10 @@ namespace InceptionCache.Providers.RedisCacheProvider
             }
             catch (Exception exc)
             {
-                _loggingService.Error(exc);
+                foreach (var key in keysAndValues.Keys)
+                {
+                    LogError(key, exc);
+                }
             }
         }
 
@@ -262,7 +280,7 @@ namespace InceptionCache.Providers.RedisCacheProvider
             }
             catch (Exception exc)
             {
-                _loggingService.Error(exc);
+                LogError(key, exc);
             }
         }
 
@@ -275,13 +293,18 @@ namespace InceptionCache.Providers.RedisCacheProvider
             }
             catch (Exception exc)
             {
-                _loggingService.Error(exc);
+                LogError(key, exc);
             }
         }
 
         private void LogDebug<T>(string operation, string key)
         {
             _loggingService.Debug(string.Format("Redis Cache|{0}|Type:{1}|Key:{2}", operation, typeof (T).Name, key));
+        }
+
+        private void LogError(string key, Exception exc)
+        {
+            _loggingService.Error(new Exception(string.Format("Key: {0}", key), exc));
         }
     }
 }
