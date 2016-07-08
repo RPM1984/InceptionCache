@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using InceptionCache.Core.Serialization;
 using Shouldly;
@@ -294,6 +295,19 @@ namespace InceptionCache.Providers.RedisCacheProvider
             catch (Exception exc)
             {
                 LogError(key, exc);
+            }
+        }
+
+        public async Task DeleteAsync(string[] keys)
+        {
+            try
+            {
+                LogDebug<string>("Delete STRING (many)", string.Join(",", keys));
+                await Cache.KeyDeleteAsync(keys.Select(x => (RedisKey)x).ToArray());
+            }
+            catch (Exception exc)
+            {
+                LogError(string.Join(",", keys), exc);
             }
         }
 

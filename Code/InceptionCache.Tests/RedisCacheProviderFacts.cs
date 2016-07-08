@@ -12,23 +12,49 @@ namespace InceptionCache.Tests
 {
     public class RedisCacheProviderFacts
     {
-        public class SetFacts : RedisCacheProviderFacts
+        private readonly RedisCacheProvider _redis;
+
+        protected RedisCacheProviderFacts()
         {
-            private readonly RedisCacheProvider _redis;
+            _redis = GetRedisCacheProvider(false); // change to false to use cloud.
+        }
 
-            public SetFacts()
-            {
-                _redis = GetRedisCacheProvider(false); // change to false to use cloud.
-            }
-            
-            private static RedisCacheProvider GetRedisCacheProvider(bool isLocal)
-            {
-                var loggingService = A.Fake<ILoggingService>();
-                return new RedisCacheProvider(isLocal ?
-                    "localhost" : "catfish.redistogo.com:10856,ssl=false,password=8a7901dbbf0fd52888e26ac777683c53", 
-                    loggingService);
-            }
+        protected static RedisCacheProvider GetRedisCacheProvider(bool isLocal)
+        {
+            var loggingService = A.Fake<ILoggingService>();
+            return new RedisCacheProvider(isLocal ?
+                "localhost" : "catfish.redistogo.com:10856,ssl=false,password=8a7901dbbf0fd52888e26ac777683c53",
+                loggingService);
+        }
 
+        public class DeleteAsyncTests : RedisCacheProviderFacts
+        {
+            [Fact]
+            public async Task GivenACacheWithMultipleKeys_DeleteAsync_RemovesMultipleKeys()
+            {
+                // Arrange.
+                var keysAndValues = new Dictionary<string, string>
+                {
+                    {"key1", "val"},
+                    {"key2", "val"}
+                };
+                await _redis.AddAsync(keysAndValues, TimeSpan.FromMinutes(1));
+                var keys = await _redis.GetAsync<string>(keysAndValues.Keys.ToArray());
+                keys.ShouldNotBeNull();
+                keys.Length.ShouldBe(keysAndValues.Count);
+
+                // Act.
+                await _redis.DeleteAsync(keysAndValues.Keys.ToArray());
+
+                // Assert.
+                keys = await _redis.GetAsync<string>(keysAndValues.Keys.ToArray());
+                keys.ShouldNotBeNull();
+                keys.ShouldBeEmpty();
+            }
+        }
+
+        public class SetFacts : RedisCacheProviderFacts
+        {  
             [Fact]
             public async Task GivenASingleItem_AddingToSet_ResultsInASetWithOneItem()
             {

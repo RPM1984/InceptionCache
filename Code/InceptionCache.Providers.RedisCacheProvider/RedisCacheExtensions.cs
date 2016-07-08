@@ -29,7 +29,10 @@ namespace InceptionCache.Providers.RedisCacheProvider
 
             await Task.WhenAll(tasks);
 
-            return tasks.Select(result => serializer.Deserialize<T>(result.Result)).ToArray();
+            return tasks
+                .Where(result => !result.Result.IsNullOrEmpty)
+                .Select(result => serializer.Deserialize<T>(result.Result))
+                .ToArray();
         }
 
         public static T[] GetString<T>(this IDatabase cache, ISerializer serializer, string[] keys)

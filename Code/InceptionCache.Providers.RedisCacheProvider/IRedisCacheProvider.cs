@@ -14,5 +14,6 @@ namespace InceptionCache.Providers.RedisCacheProvider
         Task AddToSetsAsync<T>(Dictionary<string,T[]> keysAndValues, Dictionary<string,TimeSpan?> expiries) where T : class;
         Task DeleteFromSetAsync<T>(string key, T[] values, TimeSpan? expiry) where T : class;
         Task DeleteFromSetAsync<T>(string key, T value, TimeSpan? expiry) where T : class;
+        Task DeleteAsync(string[] keys);
     }
 }
