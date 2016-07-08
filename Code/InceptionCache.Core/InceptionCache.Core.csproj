@@ -33,9 +33,9 @@
     <Reference Include="protobuf-net">
       <HintPath>..\..\packages\protobuf-net.2.0.0.668\lib\net40\protobuf-net.dll</HintPath>
     </Reference>
-    <Reference Include="Shouldly, Version=2.5.0.0, Culture=neutral, PublicKeyToken=6042cbcb05cbc941, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\packages\Shouldly.2.5.0\lib\net40\Shouldly.dll</HintPath>
+    <Reference Include="Shouldly, Version=2.8.0.0, Culture=neutral, PublicKeyToken=6042cbcb05cbc941, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Shouldly.2.8.0\lib\net40\Shouldly.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="SimpleLogging.Core, Version=0.5.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>

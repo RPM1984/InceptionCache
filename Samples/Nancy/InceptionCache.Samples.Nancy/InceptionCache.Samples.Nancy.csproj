@@ -19,6 +19,7 @@
     <IISExpressAnonymousAuthentication />
     <IISExpressWindowsAuthentication />
     <IISExpressUseClassicPipelineMode />
+    <UseGlobalApplicationHostFile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -39,26 +40,28 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Microsoft.CSharp" />
-    <Reference Include="Nancy">
-      <HintPath>..\..\..\packages\Nancy.1.1\lib\net40\Nancy.dll</HintPath>
+    <Reference Include="Nancy, Version=1.4.2.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\..\packages\Nancy.1.4.3\lib\net40\Nancy.dll</HintPath>
+      <Private>True</Private>
     </Reference>
-    <Reference Include="Nancy.Hosting.Aspnet">
-      <HintPath>..\..\..\packages\Nancy.Hosting.Aspnet.1.1\lib\net40\Nancy.Hosting.Aspnet.dll</HintPath>
+    <Reference Include="Nancy.Hosting.Aspnet, Version=1.4.1.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\..\packages\Nancy.Hosting.Aspnet.1.4.1\lib\net40\Nancy.Hosting.Aspnet.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="protobuf-net, Version=2.0.0.668, Culture=neutral, PublicKeyToken=257b51d87d2e4d67, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\packages\protobuf-net.2.0.0.668\lib\net40\protobuf-net.dll</HintPath>
     </Reference>
-    <Reference Include="Shouldly, Version=2.5.0.0, Culture=neutral, PublicKeyToken=6042cbcb05cbc941, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\packages\Shouldly.2.5.0\lib\net40\Shouldly.dll</HintPath>
+    <Reference Include="Shouldly, Version=2.8.0.0, Culture=neutral, PublicKeyToken=6042cbcb05cbc941, processorArchitecture=MSIL">
+      <HintPath>..\..\..\packages\Shouldly.2.8.0\lib\net40\Shouldly.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="SimpleLogging.Core, Version=0.5.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\packages\SimpleLogging.Core.0.5.0\lib\portable-net4+sl4+wp7+win8\SimpleLogging.Core.dll</HintPath>
     </Reference>
-    <Reference Include="StackExchange.Redis, Version=1.0.316.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\..\packages\StackExchange.Redis.1.0.450\lib\net45\StackExchange.Redis.dll</HintPath>
+    <Reference Include="StackExchange.Redis, Version=1.1.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\..\packages\StackExchange.Redis.1.1.603\lib\net45\StackExchange.Redis.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System.Runtime.Caching" />
