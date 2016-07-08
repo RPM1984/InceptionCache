@@ -25,7 +25,7 @@ namespace InceptionCache.Tests
             {
                 var loggingService = A.Fake<ILoggingService>();
                 return new RedisCacheProvider(isLocal ?
-                    "localhost" : "pub-redis-13695.us-east-1-1.2.ec2.garantiadata.com:13695,ssl=false,password=ic-rpm1984", 
+                    "localhost" : "catfish.redistogo.com:10856,ssl=false,password=8a7901dbbf0fd52888e26ac777683c53", 
                     loggingService);
             }
 
