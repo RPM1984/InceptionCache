@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 using InceptionCache.Core.Serialization;
 using Shouldly;
@@ -23,8 +24,8 @@ namespace InceptionCache.Providers.RedisCacheProvider
             ILoggingService loggingService,
             ISerializer serializer = null)
         {
-            connectionMultiplexer.ShouldNotBe(null);
-            loggingService.ShouldNotBe(null);
+            connectionMultiplexer.ShouldNotBeNull();
+            loggingService.ShouldNotBeNull();
 
             _lazyConnection = connectionMultiplexer;
             _loggingService = loggingService;
@@ -34,18 +35,17 @@ namespace InceptionCache.Providers.RedisCacheProvider
         public RedisCacheProvider(string endpoint, 
             ILoggingService loggingService, 
             ISerializer serializer = null)
-            : this(_lazyConnection, loggingService, serializer)
+            : this(_lazyConnection, 
+                  loggingService, 
+                  serializer)
         {
-            endpoint.ShouldNotBe(null);
+            endpoint.ShouldNotBeNull();
 
             _endpoint = endpoint;
             _loggingService.Info("Created Redis Cache at endpoint: {0}", endpoint);
         }
 
-        private static IDatabase Cache
-        {
-            get { return _lazyConnection.Value.GetDatabase(); }
-        }
+        private static IDatabase Cache => _lazyConnection.Value.GetDatabase();
 
         public async Task<T> GetAsync<T>(string key) where T : class
         {
@@ -79,7 +79,7 @@ namespace InceptionCache.Providers.RedisCacheProvider
         {
             try
             {
-                LogDebug<T>("Get STRING (Batch)", string.Format("(multiple) ({0}) keys", keys.Length));
+                LogDebug<T>("Get STRING (Batch)", $"(multiple) ({keys.Length}) keys");
                 return await Cache.GetStringAsync<T>(_serializer, keys);
             }
             catch (Exception exc)
@@ -96,7 +96,7 @@ namespace InceptionCache.Providers.RedisCacheProvider
         {
             try
             {
-                LogDebug<T>("Get STRING (BATCH)", string.Format("(multiple) ({0}) keys", keys.Length));
+                LogDebug<T>("Get STRING (BATCH)", $"(multiple) ({keys.Length}) keys");
                 return Cache.GetString<T>(_serializer, keys);
             }
             catch (Exception exc)
@@ -109,7 +109,9 @@ namespace InceptionCache.Providers.RedisCacheProvider
             }
         }
 
-        public async Task AddAsync<T>(string key, T value, TimeSpan expiry) where T : class
+        public async Task AddAsync<T>(string key, 
+            T value, 
+            TimeSpan expiry) where T : class
         {
             try
             {
@@ -122,7 +124,9 @@ namespace InceptionCache.Providers.RedisCacheProvider
             }
         }
 
-        public void Add<T>(string key, T value, TimeSpan expiry) where T : class
+        public void Add<T>(string key, 
+            T value, 
+            TimeSpan expiry) where T : class
         {
             try
             {
@@ -139,7 +143,7 @@ namespace InceptionCache.Providers.RedisCacheProvider
         {
             try
             {
-                LogDebug<T>("Add STRING (BATCH)", string.Format("(multiple) ({0}) keys", values.Keys.Count));
+                LogDebug<T>("Add STRING (BATCH)", $"(multiple) ({values.Keys.Count}) keys");
                 await Cache.AddStringAsync(_serializer, values, expiry);
             }
             catch (Exception exc)
@@ -155,7 +159,7 @@ namespace InceptionCache.Providers.RedisCacheProvider
         {
             try
             {
-                LogDebug<T>("Add STRING (BATCH)", string.Format("(multiple) ({0}) keys", values.Keys.Count));
+                LogDebug<T>("Add STRING (BATCH)", $"(multiple) ({values.Keys.Count}) keys");
                 Cache.AddString(_serializer, values, expiry);
             }
             catch (Exception exc)
@@ -193,10 +197,7 @@ namespace InceptionCache.Providers.RedisCacheProvider
             }
         }
 
-        public string Name
-        {
-            get { return "Redis Cache Provider"; }
-        }
+        public string Name => "Redis Cache Provider";
 
         public async Task<T[]> GetSetAsync<T>(string key) where T : class
         {
@@ -216,7 +217,7 @@ namespace InceptionCache.Providers.RedisCacheProvider
         {
             try
             {
-                LogDebug<T>("Get SET (BATCH)", string.Format("(multiple) ({0}) keys", keys.Length));
+                LogDebug<T>("Get SET (BATCH)", $"(multiple) ({keys.Length}) keys");
                 return await Cache.GetSetsAsync<T>(_serializer, keys);
             }
             catch (Exception exc)
@@ -229,7 +230,9 @@ namespace InceptionCache.Providers.RedisCacheProvider
             }
         }
 
-        public async Task AddToSetAsync<T>(string key, T[] values, TimeSpan? expiry) where T : class
+        public async Task AddToSetAsync<T>(string key, 
+            T[] values, 
+            TimeSpan? expiry) where T : class
         {
             try
             {
@@ -242,7 +245,9 @@ namespace InceptionCache.Providers.RedisCacheProvider
             }
         }
 
-        public async Task AddToSetAsync<T>(string key, T value, TimeSpan? expiry) where T : class
+        public async Task AddToSetAsync<T>(string key, 
+            T value, 
+            TimeSpan? expiry) where T : class
         {
             try
             {
@@ -260,7 +265,7 @@ namespace InceptionCache.Providers.RedisCacheProvider
         {
             try
             {
-                LogDebug<T>("Add SET (BATCH)", string.Format("(multiple) ({0}) keys", keysAndValues.Count));
+                LogDebug<T>("Add SET (BATCH)", $"(multiple) ({keysAndValues.Count}) keys");
                 await Cache.AddManyToSetsAsync(_serializer, keysAndValues, expiries);
             }
             catch (Exception exc)
@@ -272,7 +277,9 @@ namespace InceptionCache.Providers.RedisCacheProvider
             }
         }
 
-        public async Task DeleteFromSetAsync<T>(string key, T[] values, TimeSpan? expiry) where T : class
+        public async Task DeleteFromSetAsync<T>(string key, 
+            T[] values, 
+            TimeSpan? expiry) where T : class
         {
             try
             {
@@ -285,7 +292,9 @@ namespace InceptionCache.Providers.RedisCacheProvider
             }
         }
 
-        public async Task DeleteFromSetAsync<T>(string key, T value, TimeSpan? expiry) where T : class
+        public async Task DeleteFromSetAsync<T>(string key, 
+            T value, 
+            TimeSpan? expiry) where T : class
         {
             try
             {
@@ -313,12 +322,27 @@ namespace InceptionCache.Providers.RedisCacheProvider
 
         private void LogDebug<T>(string operation, string key)
         {
-            _loggingService.Debug(string.Format("Redis Cache|{0}|Type:{1}|Key:{2}", operation, typeof (T).Name, key));
+            _loggingService.Debug($"Redis Cache|{operation}|Type:{typeof(T).Name}|Key:{key}");
         }
 
         private void LogError(string key, Exception exc)
         {
-            _loggingService.Error(new Exception(string.Format("Key: {0}", key), exc));
+            var error = new StringBuilder();
+            error.AppendLine($"Error occured. Key: {key}");
+            error.AppendLine("Exception: ");
+            error.AppendLine(exc.Message);
+            if (exc.InnerException != null)
+            {
+                error.AppendLine("Inner Exception: ");
+                error.AppendLine(exc.InnerException.Message);
+            }
+            if (exc.StackTrace != null)
+            {
+                error.AppendLine("StackTrace: ");
+                error.AppendLine(exc.StackTrace);
+            }
+
+            _loggingService.Error(error.ToString());
         }
     }
 }
