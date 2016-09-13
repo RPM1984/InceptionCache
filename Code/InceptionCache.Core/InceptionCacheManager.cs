@@ -23,12 +23,12 @@ namespace InceptionCache.Core
             _cacheProviders = cacheProviders;
 
             _loggingService.Info("Creating InceptionCache with {0} levels ({1})",
-                cacheProviders.Length,
-                string.Join(", ", cacheProviders.Select(cacheProvider => cacheProvider.Name)));
+                                 cacheProviders.Length,
+                                 string.Join(", ", cacheProviders.Select(cacheProvider => cacheProvider.Name)));
         }
 
-        protected async Task<T> FindItemInCacheOrDataStore<T>(
-            CacheIdentity cacheIdentity, 
+        protected async Task<T> FindItemInCacheOrDataStoreAsync<T>(
+            CacheIdentity cacheIdentity,
             Func<Task<T>> dataStoreQuery) where T : class
         {
             var cacheProviderMisses = new HashSet<int>();
@@ -70,11 +70,11 @@ namespace InceptionCache.Core
             {
                 var cacheProvider = _cacheProviders[cacheProviderMiss];
 
-                var expiryOnThisLevel = new TimeSpan(cacheIdentity.Expiry.Ticks / ((_cacheProviders.Length + 1) - (cacheProviderMiss + 1)));
+                var expiryOnThisLevel = new TimeSpan(cacheIdentity.Expiry.Ticks/((_cacheProviders.Length + 1) - (cacheProviderMiss + 1)));
                 _loggingService.Debug("Adding to L{0} cache with an expiry of {1} minutes...", cacheProviderMiss + 1, expiryOnThisLevel.TotalMinutes);
                 await cacheProvider.AddAsync(cacheIdentity.CacheKey, result, expiryOnThisLevel);
             }
-            
+
             return result;
         }
     }

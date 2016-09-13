@@ -17,7 +17,7 @@ namespace InceptionCache.Samples.Nancy.Services
         public async Task<SampleObject> GetDaDataAsync()
         {
             var cacheIdentity = new CacheIdentity("Test-Cache-Key", TimeSpan.FromSeconds(30));
-            return await FindItemInCacheOrDataStore(cacheIdentity, GetFromDataStore);
+            return await FindItemInCacheOrDataStoreAsync(cacheIdentity, GetFromDataStore);
         }
 
         private static async Task<SampleObject> GetFromDataStore()

@@ -28,7 +28,12 @@ namespace InceptionCache.Samples.Nancy
             // Cache Level 2 - Redis
             ICacheProvider l2Cache = new RedisCacheProvider(
                 ConfigurationManager.AppSettings["RedisHost"],
-                loggingService);
+                loggingService,
+                new LoggingOptions
+                {
+                    LogCacheMisses = true,
+                    LogCacheHits = true
+                });
             l2Cache.Delete("Test-Cache-Key");
 
             container.Register<IDataService>(new DataService(

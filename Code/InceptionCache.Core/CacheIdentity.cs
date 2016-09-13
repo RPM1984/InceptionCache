@@ -5,7 +5,8 @@ namespace InceptionCache.Core
 {
     public class CacheIdentity
     {
-        public CacheIdentity(string cacheKey, TimeSpan expiry)
+        public CacheIdentity(string cacheKey,
+                             TimeSpan expiry)
         {
             cacheKey.ShouldNotBe(null);
             expiry.ShouldBeGreaterThan(TimeSpan.Zero);
@@ -14,14 +15,12 @@ namespace InceptionCache.Core
             Expiry = expiry;
         }
 
-        public string CacheKey { get; private set; }
-        public TimeSpan Expiry { get; private set; }
+        public string CacheKey { get; }
+        public TimeSpan Expiry { get; }
 
         public override string ToString()
         {
-            return string.Format("Cache Identity - Key: '{0}', Expiry: '{1}' minutes",
-                CacheKey,
-                Expiry.TotalMinutes);
+            return $"Cache Identity - Key: '{CacheKey}', Expiry: '{Expiry.TotalMinutes}' minutes";
         }
     }
 }

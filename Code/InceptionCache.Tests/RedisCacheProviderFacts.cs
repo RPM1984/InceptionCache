@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using FakeItEasy;
+using InceptionCache.Core;
 using InceptionCache.Providers.RedisCacheProvider;
 using Shouldly;
 using SimpleLogging.Core;
@@ -22,9 +23,11 @@ namespace InceptionCache.Tests
         protected static RedisCacheProvider GetRedisCacheProvider(bool isLocal)
         {
             var loggingService = A.Fake<ILoggingService>();
-            return new RedisCacheProvider(isLocal ?
-                "localhost" : "catfish.redistogo.com:10856,ssl=false,password=8a7901dbbf0fd52888e26ac777683c53",
-                loggingService);
+            return new RedisCacheProvider(isLocal
+                                              ? "localhost"
+                                              : "catfish.redistogo.com:10856,ssl=false,password=8a7901dbbf0fd52888e26ac777683c53",
+                                          loggingService,
+                                          new LoggingOptions());
         }
 
         public class DeleteAsyncTests : RedisCacheProviderFacts
@@ -54,7 +57,7 @@ namespace InceptionCache.Tests
         }
 
         public class SetFacts : RedisCacheProviderFacts
-        {  
+        {
             [Fact]
             public async Task GivenASingleItem_AddingToSet_ResultsInASetWithOneItem()
             {
@@ -64,20 +67,24 @@ namespace InceptionCache.Tests
 
                 // Act.
                 await _redis.AddToSetAsync(key, item, TimeSpan.FromMinutes(1));
-                
+
                 // Assert.
                 var members = await _redis.GetSetAsync<TestCacheObject>(key);
                 members.ShouldNotBe(null);
                 members.Count().ShouldBe(1);
                 members.ShouldContain(member => member.Key == item.Key);
             }
-            
+
             [Fact]
             public async Task GivenTwoItems_AddingToSet_ResultsInASetWithTwoItems()
             {
                 // Arrange.
                 var key = DateTime.Now.Ticks.ToString();
-                var items = new[] { new TestCacheObject("a"), new TestCacheObject("b") };
+                var items = new[]
+                {
+                    new TestCacheObject("a"),
+                    new TestCacheObject("b")
+                };
 
                 // Act.
                 await _redis.AddToSetAsync(key, items, TimeSpan.FromMinutes(1));
@@ -88,7 +95,7 @@ namespace InceptionCache.Tests
                 members.Count().ShouldBe(2);
                 foreach (var item in items)
                 {
-                    TestCacheObject item1 = item;
+                    var item1 = item;
                     members.ShouldContain(member => member.Key == item1.Key);
                 }
             }
@@ -100,7 +107,13 @@ namespace InceptionCache.Tests
                 var key = DateTime.Now.Ticks.ToString();
                 var itemOne = new TestCacheObject("a");
                 var itemTwo = new TestCacheObject("b");
-                await _redis.AddToSetAsync(key, new[] { itemOne, itemTwo }, TimeSpan.FromMinutes(1));
+                await _redis.AddToSetAsync(key,
+                                           new[]
+                                           {
+                                               itemOne,
+                                               itemTwo
+                                           },
+                                           TimeSpan.FromMinutes(1));
 
                 // Act.
                 await _redis.DeleteFromSetAsync(key, itemOne, TimeSpan.FromMinutes(1));
@@ -118,7 +131,11 @@ namespace InceptionCache.Tests
             {
                 // Arrange.
                 var key = DateTime.Now.Ticks.ToString();
-                var items = new[] { new TestCacheObject("a"), new TestCacheObject("b") };
+                var items = new[]
+                {
+                    new TestCacheObject("a"),
+                    new TestCacheObject("b")
+                };
                 await _redis.AddToSetAsync(key, items, TimeSpan.FromMinutes(1));
 
                 // Act.
@@ -136,13 +153,25 @@ namespace InceptionCache.Tests
                 // Arrange.
                 const string keyA = "a";
                 const string keyB = "b";
-                var keyAItems = new[] { new TestCacheObject("a"), new TestCacheObject("b") };
-                var keyBItems = new[] { new TestCacheObject("c"), new TestCacheObject("d") };
+                var keyAItems = new[]
+                {
+                    new TestCacheObject("a"),
+                    new TestCacheObject("b")
+                };
+                var keyBItems = new[]
+                {
+                    new TestCacheObject("c"),
+                    new TestCacheObject("d")
+                };
                 await _redis.AddToSetAsync(keyA, keyAItems, TimeSpan.FromMinutes(1));
                 await _redis.AddToSetAsync(keyB, keyBItems, TimeSpan.FromMinutes(1));
 
                 // Act.
-                var setsAndMembers = await _redis.GetSetsAsync<TestCacheObject>(new[] { keyA, keyB });
+                var setsAndMembers = await _redis.GetSetsAsync<TestCacheObject>(new[]
+                {
+                    keyA,
+                    keyB
+                });
 
                 // Assert.
                 setsAndMembers.ShouldNotBe(null);
@@ -151,12 +180,12 @@ namespace InceptionCache.Tests
                 setsAndMembers.ShouldContain(member => member.Key == keyB);
                 foreach (var keyAItem in keyAItems)
                 {
-                    TestCacheObject item = keyAItem;
+                    var item = keyAItem;
                     setsAndMembers[keyA].ShouldContain(member => member.Key == item.Key);
                 }
                 foreach (var keyBItem in keyBItems)
                 {
-                    TestCacheObject item = keyBItem;
+                    var item = keyBItem;
                     setsAndMembers[keyB].ShouldContain(member => member.Key == item.Key);
                 }
             }
@@ -167,8 +196,16 @@ namespace InceptionCache.Tests
                 // Arrange.
                 const string keyA = "a";
                 const string keyB = "b";
-                var keyAItems = new[] { new TestCacheObject("a"), new TestCacheObject("b") };
-                var keyBItems = new[] { new TestCacheObject("c"), new TestCacheObject("d") };
+                var keyAItems = new[]
+                {
+                    new TestCacheObject("a"),
+                    new TestCacheObject("b")
+                };
+                var keyBItems = new[]
+                {
+                    new TestCacheObject("c"),
+                    new TestCacheObject("d")
+                };
                 var sets = new Dictionary<string, TestCacheObject[]>
                 {
                     {keyA, keyAItems},
@@ -182,21 +219,25 @@ namespace InceptionCache.Tests
 
                 // Act.
                 await _redis.AddToSetsAsync(sets, setsAndExpiries);
-                
+
                 // Assert.
-                var setsAndMembers = await _redis.GetSetsAsync<TestCacheObject>(new[] { keyA, keyB });
+                var setsAndMembers = await _redis.GetSetsAsync<TestCacheObject>(new[]
+                {
+                    keyA,
+                    keyB
+                });
                 setsAndMembers.ShouldNotBe(null);
                 setsAndMembers.Keys.Count.ShouldBe(2);
                 setsAndMembers.ShouldContain(member => member.Key == keyA);
                 setsAndMembers.ShouldContain(member => member.Key == keyB);
                 foreach (var keyAItem in keyAItems)
                 {
-                    TestCacheObject item = keyAItem;
+                    var item = keyAItem;
                     setsAndMembers[keyA].ShouldContain(member => member.Key == item.Key);
                 }
                 foreach (var keyBItem in keyBItems)
                 {
-                    TestCacheObject item = keyBItem;
+                    var item = keyBItem;
                     setsAndMembers[keyB].ShouldContain(member => member.Key == item.Key);
                 }
             }

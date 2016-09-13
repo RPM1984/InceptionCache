@@ -17,7 +17,12 @@ namespace InceptionCache.Tests
             var loggingService = A.Fake<ILoggingService>();
             var l1Cache = A.Fake<ICacheProvider>();
             var l2Cache = A.Fake<ICacheProvider>();
-            var cacheLayer = new CacheManagerTest(loggingService, new[] { l1Cache, l2Cache });
+            var cacheLayer = new CacheManagerTest(loggingService,
+                                                  new[]
+                                                  {
+                                                      l1Cache,
+                                                      l2Cache
+                                                  });
             const string cacheKey = "Test";
             var expiry = TimeSpan.FromMinutes(1);
             var cacheIdentity = new CacheIdentity(cacheKey, expiry);
@@ -26,7 +31,7 @@ namespace InceptionCache.Tests
             A.CallTo(() => l1Cache.GetAsync<TestCacheObject>(cacheIdentity.CacheKey)).Returns(Task.FromResult(testCacheObject));
 
             // Act.
-            var result = await cacheLayer.Get(cacheIdentity, dataStoreQuery);
+            var result = await cacheLayer.GetAsync(cacheIdentity, dataStoreQuery);
 
             // Assert.
             result.ShouldNotBe(null);
@@ -42,7 +47,12 @@ namespace InceptionCache.Tests
             var loggingService = A.Fake<ILoggingService>();
             var l1Cache = A.Fake<ICacheProvider>();
             var l2Cache = A.Fake<ICacheProvider>();
-            var cacheLayer = new CacheManagerTest(loggingService, new[] { l1Cache, l2Cache });
+            var cacheLayer = new CacheManagerTest(loggingService,
+                                                  new[]
+                                                  {
+                                                      l1Cache,
+                                                      l2Cache
+                                                  });
             const string cacheKey = "Test";
             var expiry = TimeSpan.FromMinutes(1);
             var cacheIdentity = new CacheIdentity(cacheKey, expiry);
@@ -52,7 +62,7 @@ namespace InceptionCache.Tests
             A.CallTo(() => l2Cache.GetAsync<TestCacheObject>(cacheIdentity.CacheKey)).Returns(Task.FromResult(testCacheObject));
 
             // Act.
-            var result = await cacheLayer.Get(cacheIdentity, dataStoreQuery);
+            var result = await cacheLayer.GetAsync(cacheIdentity, dataStoreQuery);
 
             // Assert.
             result.ShouldNotBe(null);
@@ -69,7 +79,12 @@ namespace InceptionCache.Tests
             var loggingService = A.Fake<ILoggingService>();
             var l1Cache = A.Fake<ICacheProvider>();
             var l2Cache = A.Fake<ICacheProvider>();
-            var cacheLayer = new CacheManagerTest(loggingService, new[] { l1Cache, l2Cache });
+            var cacheLayer = new CacheManagerTest(loggingService,
+                                                  new[]
+                                                  {
+                                                      l1Cache,
+                                                      l2Cache
+                                                  });
             const string cacheKey = "Test";
             var expiry = TimeSpan.FromMinutes(1);
             var cacheIdentity = new CacheIdentity(cacheKey, expiry);
@@ -79,7 +94,7 @@ namespace InceptionCache.Tests
             A.CallTo(() => l2Cache.GetAsync<TestCacheObject>(cacheIdentity.CacheKey)).Returns(Task.FromResult<TestCacheObject>(null));
 
             // Act.
-            var result = await cacheLayer.Get(cacheIdentity, dataStoreQuery);
+            var result = await cacheLayer.GetAsync(cacheIdentity, dataStoreQuery);
 
             // Assert.
             result.ShouldNotBe(null);
@@ -98,7 +113,12 @@ namespace InceptionCache.Tests
             var loggingService = A.Fake<ILoggingService>();
             var l1Cache = A.Fake<ICacheProvider>();
             var l2Cache = A.Fake<ICacheProvider>();
-            var cacheLayer = new CacheManagerTest(loggingService, new[] { l1Cache, l2Cache });
+            var cacheLayer = new CacheManagerTest(loggingService,
+                                                  new[]
+                                                  {
+                                                      l1Cache,
+                                                      l2Cache
+                                                  });
             const string cacheKey = "Test";
             var expiry = TimeSpan.FromMinutes(1);
             var cacheIdentity = new CacheIdentity(cacheKey, expiry);
@@ -108,7 +128,7 @@ namespace InceptionCache.Tests
             A.CallTo(() => l2Cache.GetAsync<TestCacheObject>(cacheIdentity.CacheKey)).Returns(Task.FromResult<TestCacheObject>(null));
 
             // Act.
-            var result = await cacheLayer.Get(cacheIdentity, dataStoreQuery);
+            var result = await cacheLayer.GetAsync(cacheIdentity, dataStoreQuery);
 
             // Assert.
             result.ShouldBe(null);

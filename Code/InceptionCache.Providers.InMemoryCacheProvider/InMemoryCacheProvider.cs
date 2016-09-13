@@ -14,7 +14,8 @@ namespace InceptionCache.Providers.InMemoryCacheProvider
         private readonly ObjectCache _cache;
         private readonly ILoggingService _loggingService;
 
-        public InMemoryCacheProvider(ObjectCache cache, ILoggingService loggingService)
+        public InMemoryCacheProvider(ObjectCache cache,
+                                     ILoggingService loggingService)
         {
             cache.ShouldNotBe(null);
             loggingService.ShouldNotBe(null);
@@ -25,9 +26,10 @@ namespace InceptionCache.Providers.InMemoryCacheProvider
             _loggingService.Info("Created In Memory Cache");
         }
 
-        private void LogDebug<T>(string operation, string key)
+        private void LogDebug<T>(string operation,
+                                 string key)
         {
-            _loggingService.Debug(string.Format("In-Memory Cache|{0}|Type:{1}|Key:{2}", operation, typeof(T).Name, key));
+            _loggingService.Debug($"In-Memory Cache|{operation}|Type:{typeof(T).Name}|Key:{key}");
         }
 
 
@@ -40,27 +42,31 @@ namespace InceptionCache.Providers.InMemoryCacheProvider
         {
             LogDebug<T>("GET", key);
 
-            return (T)_cache.Get(key);
+            return (T) _cache.Get(key);
         }
 
         public T[] Get<T>(string[] keys) where T : class
         {
-            LogDebug<T>("BATCH GET", string.Format("(multiple) ({0}) keys", keys.Length));
+            LogDebug<T>("BATCH GET", $"(multiple) ({keys.Length}) keys");
 
             return keys.Select(Get<T>).ToArray();
         }
 
-        public Task<T[]> GetAsync<T>(string[] keys) where T : class
+        public async Task<T[]> GetAsync<T>(string[] keys) where T : class
         {
-            return Task.FromResult(Get<T>(keys));
+            return Get<T>(keys);
         }
 
-        public async Task AddAsync<T>(string key, T value, TimeSpan expiry) where T : class
+        public async Task AddAsync<T>(string key,
+                                      T value,
+                                      TimeSpan expiry) where T : class
         {
-            Add(key, value, expiry);
+            await Task.Run(() => Add(key, value, expiry)).ConfigureAwait(false);
         }
 
-        public void Add<T>(string key, T value, TimeSpan expiry) where T : class
+        public void Add<T>(string key,
+                           T value,
+                           TimeSpan expiry) where T : class
         {
             LogDebug<T>("SET", key);
 
@@ -70,18 +76,22 @@ namespace InceptionCache.Providers.InMemoryCacheProvider
                 Delete(key);
             }
 
-            _cache.Add(key, value, new CacheItemPolicy
-            {
-                AbsoluteExpiration = DateTimeOffset.UtcNow.AddTicks(expiry.Ticks)
-            });
+            _cache.Add(key,
+                       value,
+                       new CacheItemPolicy
+                       {
+                           AbsoluteExpiration = DateTimeOffset.UtcNow.AddTicks(expiry.Ticks)
+                       });
         }
 
-        public async Task AddAsync<T>(Dictionary<string, T> values, TimeSpan expiry) where T : class
+        public async Task AddAsync<T>(Dictionary<string, T> values,
+                                      TimeSpan expiry) where T : class
         {
-            Add(values, expiry);
+            await Task.Run(() => Add(values, expiry)).ConfigureAwait(false);
         }
 
-        public void Add<T>(Dictionary<string, T> values, TimeSpan expiry) where T : class
+        public void Add<T>(Dictionary<string, T> values,
+                           TimeSpan expiry) where T : class
         {
             foreach (var kv in values)
             {
@@ -91,7 +101,7 @@ namespace InceptionCache.Providers.InMemoryCacheProvider
 
         public async Task DeleteAsync(string key)
         {
-            Delete(key);
+            await Task.Run(() => Delete(key)).ConfigureAwait(false);
         }
 
         public void Delete(string key)
@@ -101,12 +111,6 @@ namespace InceptionCache.Providers.InMemoryCacheProvider
             _cache.Remove(key);
         }
 
-        public string Name
-        {
-            get
-            {
-                return "In-Memory Cache Provider";
-            }
-        }
+        public string Name => "In-Memory Cache Provider";
     }
 }

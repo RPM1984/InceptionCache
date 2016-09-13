@@ -26,7 +26,7 @@ namespace InceptionCache.Core.Serialization
             var binaryFormatter = new BinaryFormatter();
             using (var memoryStream = new MemoryStream(stream))
             {
-                var result = (T)binaryFormatter.Deserialize(memoryStream);
+                var result = (T) binaryFormatter.Deserialize(memoryStream);
                 return result;
             }
         }

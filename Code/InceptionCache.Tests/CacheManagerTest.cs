@@ -14,9 +14,10 @@ namespace InceptionCache.Tests
         {
         }
 
-        public Task<TestCacheObject> Get(CacheIdentity cacheIdentity, Func<Task<TestCacheObject>> dbQuery)
+        public async Task<TestCacheObject> GetAsync(CacheIdentity cacheIdentity,
+                                                    Func<Task<TestCacheObject>> dbQuery)
         {
-            return FindItemInCacheOrDataStore(cacheIdentity, dbQuery);
+            return await FindItemInCacheOrDataStoreAsync(cacheIdentity, dbQuery);
         }
     }
 }

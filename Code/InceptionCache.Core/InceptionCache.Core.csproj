@@ -50,6 +50,7 @@
     <Compile Include="CacheIdentity.cs" />
     <Compile Include="InceptionCacheManager.cs" />
     <Compile Include="ICacheProvider.cs" />
+    <Compile Include="LoggingOptions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Serialization\BinarySerializer.cs" />
     <Compile Include="Serialization\ISerializer.cs" />
