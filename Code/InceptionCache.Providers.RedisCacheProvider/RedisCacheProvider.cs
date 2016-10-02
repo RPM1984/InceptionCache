@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.Caching;
 using System.Text;
 using System.Threading.Tasks;
 using InceptionCache.Core;
@@ -21,6 +23,7 @@ namespace InceptionCache.Providers.RedisCacheProvider
         private readonly ILoggingService _loggingService;
         private readonly ISerializer _serializer;
         private readonly LoggingOptions _loggingOptions;
+        private readonly ObjectCache _inMemoryCache = MemoryCache.Default;
 
         public RedisCacheProvider(Lazy<ConnectionMultiplexer> connectionMultiplexer,
                                   ILoggingService loggingService,
@@ -53,12 +56,13 @@ namespace InceptionCache.Providers.RedisCacheProvider
         }
 
         private static IDatabase Cache => _lazyConnection.Value.GetDatabase();
-
+        
         public async Task<T> GetAsync<T>(string key) where T : class
         {
             try
             {
                 LogDebug<T>("Get STRING", key);
+                AddToCacheStats(key);
                 return await Cache.GetStringAsync<T>(_loggingService, _loggingOptions, _serializer, key).ConfigureAwait(false);
             }
             catch (Exception exc)
@@ -73,6 +77,7 @@ namespace InceptionCache.Providers.RedisCacheProvider
             try
             {
                 LogDebug<T>("Get STRING", key);
+                AddToCacheStats(key);
                 return Cache.GetString<T>(_serializer, key);
             }
             catch (Exception exc)
@@ -87,6 +92,7 @@ namespace InceptionCache.Providers.RedisCacheProvider
             try
             {
                 LogDebug<T>("Get STRING (Batch)", $"(multiple) ({keys.Length}) keys");
+                AddToCacheStats(keys);
                 return await Cache.GetStringAsync<T>(_serializer, keys).ConfigureAwait(false);
             }
             catch (Exception exc)
@@ -104,6 +110,7 @@ namespace InceptionCache.Providers.RedisCacheProvider
             try
             {
                 LogDebug<T>("Get STRING (BATCH)", $"(multiple) ({keys.Length}) keys");
+                AddToCacheStats(keys);
                 return Cache.GetString<T>(_serializer, keys);
             }
             catch (Exception exc)
@@ -213,6 +220,7 @@ namespace InceptionCache.Providers.RedisCacheProvider
             try
             {
                 LogDebug<T>("Get SET", key);
+                AddToCacheStats(key);
                 return await Cache.GetSetAsync<T>(_loggingService, _loggingOptions, _serializer, key).ConfigureAwait(false);
             }
             catch (Exception exc)
@@ -227,6 +235,7 @@ namespace InceptionCache.Providers.RedisCacheProvider
             try
             {
                 LogDebug<T>("Get SET (BATCH)", $"(multiple) ({keys.Length}) keys");
+                AddToCacheStats(keys);
                 return await Cache.GetSetsAsync<T>(_serializer, keys).ConfigureAwait(false);
             }
             catch (Exception exc)
@@ -335,6 +344,81 @@ namespace InceptionCache.Providers.RedisCacheProvider
             _loggingService.Debug($"Redis Cache|{operation}|Type:{typeof(T).Name}|Key:{key}");
         }
 
+        private void AddToCacheStats(IEnumerable<string> keys)
+        {
+            foreach (var key in keys)
+            {
+                AddToCacheStats(key);
+            }
+        }
+
+        private void AddToCacheStats(string key)
+        {
+            if (!_loggingOptions.LogCacheStatsSummaryAfter.HasValue)
+            {
+                return;
+            }
+            
+            if (_inMemoryCache.Contains(CacheStatsKey))
+            {
+                
+                var stats = (CacheStatsItem) _inMemoryCache[CacheStatsKey];
+
+                if (stats.Items.ContainsKey(key))
+                {
+                    stats.Items[key]++;
+                }
+                else
+                {
+                    stats.Items.TryAdd(key, 1);
+                }
+                
+            }
+            else
+            {
+                var stats = new CacheStatsItem
+                {
+                    Items = new ConcurrentDictionary<string, int>()
+                };
+
+                stats.Items.TryAdd(key, 1);
+                _inMemoryCache.Set(CacheStatsKey,
+                                   stats,
+                                   new CacheItemPolicy
+                                   {
+                                       AbsoluteExpiration = DateTime.Now.Add(_loggingOptions.LogCacheStatsSummaryAfter.Value),
+                                       RemovedCallback = cacheEntryRemovedArgs =>
+                                       {
+                                           LogCacheStats(
+                                               _loggingService,
+                                               _loggingOptions.LogCacheStatsSummaryAfter.Value,
+                                               ((CacheStatsItem) cacheEntryRemovedArgs.CacheItem.Value).Items
+                                               );
+                                       }
+                                   });
+            }
+        }
+
+        private const string CacheStatsKey = "cache-stats";
+        
+        private static void LogCacheStats(
+            ILoggingService loggingService,
+            TimeSpan logCacheStatsSummaryAfter,
+            ConcurrentDictionary<string, int> stats)
+        {
+
+            var stringBuilder = new StringBuilder();
+            stringBuilder.AppendLine($"Multiple GET's for same key after after {logCacheStatsSummaryAfter.Minutes} minutes:");
+            foreach (var stat in stats
+                .Where(stat => stat.Value > 1)
+                .OrderByDescending(stat => stat.Value)
+                .ThenBy(stat => stat.Key))
+            {
+                stringBuilder.AppendLine($"{stat.Key}|{stat.Value}");
+            }
+            loggingService.Info(stringBuilder.ToString());
+        }
+
         private void LogError(string key,
                               Exception exc)
         {
@@ -360,5 +444,11 @@ namespace InceptionCache.Providers.RedisCacheProvider
 
             _loggingService.Error(error.ToString());
         }
+    }
+
+    public class CacheStatsItem
+    {
+
+        public ConcurrentDictionary<string, int> Items { get; set; } = new ConcurrentDictionary<string, int>();
     }
 }
