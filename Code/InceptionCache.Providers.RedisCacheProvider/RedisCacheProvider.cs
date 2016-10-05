@@ -213,6 +213,19 @@ namespace InceptionCache.Providers.RedisCacheProvider
             }
         }
 
+        public void Delete(string[] keys)
+        {
+            try
+            {
+                LogDebug<string>("Delete STRING (many)", string.Join(",", keys));
+                Cache.KeyDelete(keys.Select(x => (RedisKey)x).ToArray());
+            }
+            catch (Exception exc)
+            {
+                LogError(string.Join(",", keys), exc);
+            }
+        }
+
         public string Name => "Redis Cache Provider";
 
         public async Task<T[]> GetSetAsync<T>(string key) where T : class

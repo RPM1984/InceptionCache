@@ -27,7 +27,9 @@ namespace InceptionCache.Core
                     TimeSpan expiry) where T : class;
 
         Task DeleteAsync(string key);
+        Task DeleteAsync(string[] keys);
         void Delete(string key);
+        void Delete(string[] keys);
 
         string Name { get; }
     }

@@ -104,6 +104,19 @@ namespace InceptionCache.Providers.InMemoryCacheProvider
             await Task.Run(() => Delete(key)).ConfigureAwait(false);
         }
 
+        public async Task DeleteAsync(string[] keys)
+        {
+            await Task.Run(() => Delete(keys)).ConfigureAwait(false);
+        }
+
+        public void Delete(string[] keys)
+        {
+            foreach (var key in keys)
+            {
+                Delete(key);
+            }
+        }
+
         public void Delete(string key)
         {
             LogDebug<string>("DELETE", key);
