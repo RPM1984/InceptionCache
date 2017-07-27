@@ -16,9 +16,7 @@ namespace InceptionCache.Providers.RedisCacheProvider
     public class RedisCacheProvider : IRedisCacheProvider
     {
         private static string _endpoint;
-
-        private static Lazy<ConnectionMultiplexer> _lazyConnection =
-            new Lazy<ConnectionMultiplexer>(() => ConnectionMultiplexer.Connect(_endpoint));
+        private static Lazy<ConnectionMultiplexer> _lazyConnection;
 
         private readonly ILoggingService _loggingService;
         private readonly ISerializer _serializer;
@@ -44,7 +42,7 @@ namespace InceptionCache.Providers.RedisCacheProvider
                                   ILoggingService loggingService,
                                   LoggingOptions loggingOptions,
                                   ISerializer serializer = null)
-            : this(_lazyConnection,
+            : this(new Lazy<ConnectionMultiplexer>(() => ConnectionMultiplexer.Connect(_endpoint)),
                    loggingService,
                    loggingOptions,
                    serializer)
